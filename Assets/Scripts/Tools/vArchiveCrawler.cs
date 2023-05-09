@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.Serialization;
 
 
 public class vArchiveCrawler : MonoBehaviour
@@ -19,10 +20,11 @@ public class vArchiveCrawler : MonoBehaviour
 
     public Action<string> OnError;
     public Action<string> OnSuccess;
-    public UserData tempUserData;
-    public IEnumerator GetUserData(string url)
+    public UserData resultUserData;
+    public IEnumerator GetUserData(string url, string button, string board)
     {
-        using (UnityWebRequest result = UnityWebRequest.Get(url))
+        string finalUrl = "https://v-archive.net/api/archive/" + url + "/board/" + button + "/" + board;
+        using (UnityWebRequest result = UnityWebRequest.Get(finalUrl))
         {
             yield return result.SendWebRequest();
 
@@ -33,7 +35,7 @@ public class vArchiveCrawler : MonoBehaviour
             else
             {
                 string json = result.downloadHandler.text;
-                tempUserData = JsonUtility.FromJson<UserData>(json);
+                resultUserData = JsonUtility.FromJson<UserData>(json);
                 //OnSuccess(rawUTF8Text);
             }
             
